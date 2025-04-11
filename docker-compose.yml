@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+    laravel_franken:
+        container_name: laravel_franken
+        image: image_laravel_franken
+        build: .
+        ports:
+            - '8000:80'
+        env_file:
+            - .env
+
+    mysql_db:
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: labnotes
+        ports:
+            - 3306:3306
+
+    phpmyadmin:
+        image: phpmyadmin:latest
+        ports:
+            - 8001:80
+        environment:
+            - PMA_ARBITRARY=1

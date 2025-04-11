@@ -1,10 +1,12 @@
-FROM dunglas/frankenphp:php8.3
+FROM dunglas/frankenphp
 
-ENV SERVER_NAME=":80"
-
-WORKDIR /app
-
-COPY . /app
+RUN install-php-extensions \
+    pdo_mysql \
+    gd \
+    intl \
+    zip \
+    opcache \
+    oci8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
@@ -18,20 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libicu-dev \
     npm 
 
-RUN docker-php-ext-install -j$(nproc) \
-    pdo_mysql \
-    zip \
-    intl \
-    gd \
-    bcmath \
-    && docker-php-ext-enable pdo_mysql zip intl gd bcmath
-
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Hanya saat development:
+ENV SERVER_NAME=":80"
 
-RUN composer install && \
-    npm install && \
-    npm run build
-
-RUN php artisan key:generate && \
-    php artisan storage:link && \
-    php artisan optimize
+# untuk mode worker:
+# ENV FRANKENPHP_CONFIG="worker /app/public/frankenphp-worker.php

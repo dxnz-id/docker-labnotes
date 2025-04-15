@@ -2,7 +2,7 @@ services:
   franken:
     container_name: franken
     build: .
-    # restart: always
+    restart: always
     volumes:
       - ./app:/app
       - ./custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
@@ -12,15 +12,17 @@ services:
       - "443:443/udp"
     tty: true
 
-  mysql_db:
-    container_name: mysql
-    image: mysql:latest
-    # restart: always
+  mariadb:
+    container_name: mariadb
+    image: mariadb:latest
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: labnotes
     ports:
       - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
 
   phpmyadmin:
     container_name: phpmyadmin
@@ -29,3 +31,6 @@ services:
       - "81:80"
     environment:
       PMA_ARBITRARY: 1
+
+volumes:
+  db_data:
